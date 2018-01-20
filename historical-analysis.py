@@ -15,10 +15,11 @@ def parse_setup_ini(contents):
     for l in contents.splitlines():
         if l.startswith('@'):
             p = l[2:]
-            s[p] = []
         elif l.startswith('version:'):
             v = l[9:]
-            s[p].append(v)
+            # only note the first version: line (the 'current' version)
+            if p not in s:
+                s[p] = calm.version.SetupVersion(v)
 
     return s
 
@@ -64,15 +65,11 @@ for u in urls:
                 # print("'%s' disappeared in %s" % (k, filename))
                 continue
 
-            if len(curr[k]) < 1:
-                # print("'%s' doesn't have any versions in %s" % (k, circa))
-                continue
-
-            vc = calm.version.SetupVersion(curr[k][0])
-            vp = calm.version.SetupVersion(prev[k][0])
+            vc = curr[k]
+            vp = prev[k]
 
             if vc > vp:
-                print("'%s' version went backwards from '%s' to '%s' after %s" % (k, curr[k][0], prev[k][0], circa))
+                print("'%s' version went backwards from '%s' to '%s' after %s" % (k, vc._version_string, vp._version_string, circa))
                 # don't report this again
                 prev[k] = curr[k]
     else:
