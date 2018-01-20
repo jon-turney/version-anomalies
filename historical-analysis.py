@@ -3,6 +3,7 @@
 import argparse
 import os
 import re
+import sys
 import urllib.request
 
 import calm.version
@@ -47,10 +48,10 @@ for u in urls:
 
     if not os.path.isfile(cache_fn):
         (filename, headers) = urllib.request.urlretrieve(u, cache_fn)
-        print('fetching %s' % filename)
+        print('fetching %s' % u, file=sys.stderr)
     else:
         filename = cache_fn
-        # print('%s from cache' % filename)
+        # print('%s from cache' % filename, file=sys.stderr)
 
     # parse it
     with open(filename, errors='ignore') as f:
