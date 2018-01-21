@@ -7,6 +7,7 @@ import urllib.request
 
 import calm.version
 
+
 def parse_setup_ini(contents):
     s = {}
 
@@ -19,6 +20,7 @@ def parse_setup_ini(contents):
             s[p].append(v)
 
     return s
+
 
 parser = argparse.ArgumentParser(description='Make setup.ini')
 parser.add_argument('--arch', action='store', required=True, choices=['x86', 'x86_64'])
@@ -48,7 +50,7 @@ for u in urls:
         print('fetching %s' % filename)
     else:
         filename = cache_fn
-#        print('%s from cache' % filename)
+        # print('%s from cache' % filename)
 
     # parse it
     with open(filename, errors='ignore') as f:
@@ -58,11 +60,11 @@ for u in urls:
     if prev:
         for k in curr:
             if k not in prev:
-#                print("'%s' disappeared in %s" % (k, filename))
+                # print("'%s' disappeared in %s" % (k, filename))
                 continue
 
             if len(curr[k]) < 1:
-#                print("'%s' doesn't have any versions in %s" % (k, circa))
+                # print("'%s' doesn't have any versions in %s" % (k, circa))
                 continue
 
             vc = calm.version.SetupVersion(curr[k][0])
@@ -73,5 +75,5 @@ for u in urls:
                 # don't report this again
                 prev[k] = curr[k]
     else:
-    # first becomes previous
+        # first becomes previous
         prev = curr
