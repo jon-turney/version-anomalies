@@ -41,6 +41,8 @@ for l in html.splitlines():
     if m:
         urls.append(m.group(1) + '/setup.ini')
 
+print("%-23s %-17s %-17s %s" % ('package','version','version','after circa'))
+
 # for each setup.ini URL, fetch, parse and compare with previous
 prev = None
 for u in urls:
@@ -69,7 +71,7 @@ for u in urls:
             vp = prev[k]
 
             if vc > vp:
-                print("'%s' version went backwards from '%s' to '%s' after %s" % (k, vc._version_string, vp._version_string, circa))
+                print("%-23s %-17s %-17s %s" % (k, vc._version_string, vp._version_string, circa))
                 # don't report this again
                 prev[k] = curr[k]
     else:
