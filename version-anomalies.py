@@ -4,6 +4,7 @@ import argparse
 import os
 import re
 import sys
+import types
 import urllib.request
 
 import calm.version
@@ -15,11 +16,15 @@ def parse_setup_ini(contents):
     for l in contents.splitlines():
         if l.startswith('@'):
             p = l[2:]
+            s[p] = types.SimpleNamespace(replace=[])
+        elif l.startswith('replace-versions:'):
+            r = l[18:]
+            s[p].replace = r.split()
         elif l.startswith('version:'):
             v = l[9:]
             # only note the first version: line (the 'current' version)
-            if p not in s:
-                s[p] = calm.version.SetupVersion(v)
+            if not hasattr(s[p], 'version'):
+                s[p].version = calm.version.SetupVersion(v)
 
     return s
 
@@ -67,13 +72,17 @@ for u in urls:
                 # print("'%s' disappeared in %s" % (k, filename))
                 continue
 
-            vc = curr[k]
-            vp = prev[k]
+            if not hasattr(curr[k], 'version'):
+                # print("'%s' has no versions in %s" % (k, filename))
+                continue
 
-            if vc > vp:
+            vc = curr[k].version
+            vp = prev[k].version
+
+            if (vc > vp) and (vc._version_string not in prev[k].replace):
                 print("%-23s %-17s %-17s %s" % (k, vc._version_string, vp._version_string, circa))
                 # don't report this again
-                prev[k] = curr[k]
+                prev[k].version = curr[k].version
     else:
         # first becomes previous
         prev = curr
