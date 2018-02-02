@@ -16,7 +16,7 @@ def parse_setup_ini(contents):
     for l in contents.splitlines():
         if l.startswith('@'):
             p = l[2:]
-            s[p] = types.SimpleNamespace(replace=[])
+            s[p] = types.SimpleNamespace(replace=[], suppress=[])
         elif l.startswith('replace-versions:'):
             r = l[18:]
             s[p].replace = r.split()
@@ -31,6 +31,7 @@ def parse_setup_ini(contents):
 
 parser = argparse.ArgumentParser(description='Make setup.ini')
 parser.add_argument('--arch', action='store', required=True, choices=['x86', 'x86_64'])
+parser.add_argument('--all', action='store_true')
 (args) = parser.parse_args()
 
 if args.arch == 'x86':
@@ -79,10 +80,14 @@ for u in urls:
             vc = curr[k].version
             vp = prev[k].version
 
-            if (vc > vp) and (vc._version_string not in prev[k].replace):
+            if (vc > vp) and (vc._version_string not in prev[k].replace + prev[k].suppress):
                 print("%-23s %-17s %-17s %s" % (k, vc._version_string, vp._version_string, circa))
-                # don't report this again
-                prev[k].version = curr[k].version
+                # don't report this specific version again
+                prev[k].suppress.append(vc._version_string)
+                # don't report any more versions, unless they are also greater than this
+                if not args.all:
+                    prev[k].version = vc
+
     else:
         # first becomes previous
         prev = curr
