@@ -49,8 +49,13 @@ for l in html.splitlines():
 
 print("%-23s %-17s %-17s %s" % ('package','version','version','after circa'))
 
+# read first setup.ini from a mirror which updates frequently
+(filename, headers) = urllib.request.urlretrieve("http://mirrors.kernel.org/sourceware/cygwin/" + args.arch + "/setup.ini")
+with open(filename) as f:
+    prev = parse_setup_ini(f.read())
+urllib.request.urlcleanup()
+
 # for each setup.ini URL, fetch, parse and compare with previous
-prev = None
 for u in urls:
     circa = re.search('(circa/.*)/setup.ini', u).group(1)
     cache_fn = os.path.join('cache', u.replace('http://', '').replace(os.path.sep, '_'))
