@@ -47,7 +47,7 @@ for l in html.splitlines():
     if m:
         urls.append(m.group(1) + '/setup.ini')
 
-print("%-23s %-17s %-17s %s" % ('package','version','version','after circa'))
+print("%-23.23s %-21s %-21s %s" % ('package','version','version','after circa'))
 
 # read first setup.ini from a mirror which updates frequently
 (filename, headers) = urllib.request.urlretrieve("http://mirrors.kernel.org/sourceware/cygwin/" + args.arch + "/setup.ini")
@@ -86,7 +86,7 @@ for u in urls:
             vp = prev[k].version
 
             if (vc > vp) and (vc._version_string not in prev[k].replace + prev[k].suppress):
-                print("%-23s %-17s %-17s %s" % (k, vc._version_string, vp._version_string, circa))
+                print("%-23.23s %-21s %-21s %s" % (k, vc._version_string, vp._version_string, circa))
                 # don't report this specific version again
                 prev[k].suppress.append(vc._version_string)
                 # don't report any more versions, unless they are also greater than this
